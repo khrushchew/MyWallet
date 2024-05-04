@@ -1,3 +1,4 @@
+# Объявляем все необходимые импорты для работы приложения
 from os import path
 import json
 from datetime import datetime, timedelta
@@ -5,6 +6,9 @@ from MyExceptions import UserNameException, PasswordException, JsonException
 
 
 class Wallet:
+    # Реализуем работу кошелька через ООП
+    
+    # Статический метод для инициализации json у нового пользователя
     @staticmethod
     def create_user_json():
         # Метод для создания начальных данных пользователя
@@ -18,28 +22,30 @@ class Wallet:
     
     @staticmethod
     def read_json(name):
-        # Метод для чтения данных из файла JSON
+        # Статический метод для чтения данных из файла JSON
         with open(f"D:/PyProjects/GitHub/MyWallet/Users/{name}.json", "r", encoding="utf-8") as file:
             return json.load(file)
     
     @staticmethod
     def create_data(string):
+        # Статический метод для создания разметки расхода\дохода под JSON
         data = {"ID": len(User.read_json(User.name_of_user)["deposits"]) + 1,
                 "category": string,
                 "name": input("Введите описание\n"),
                 "value": (int(input("Введите сумму:\n"))),
                 "date": input("Введите дату в формате '04-05-2024'\n")}
         return data
-        
+    
     def __init__(self, name):
-        # Инициализация класса
-        # Проверяем, что имя пользователя состоит только из латинских букв
+        # Магический метод для инициализации всех экземпляров
+        
+        # Проверка, что имя пользователя состоит только из латинских букв
         if (set(name.lower()) & set("ABCDEFGHIJKLMNOPQRSTUVWXYZ".lower())) == set(name.lower()):
             self.__name = name
         else:
             raise UserNameException("Доступ запрещён!")
         
-        # Проверяем, существует ли файл с данными пользователя
+        # Проверка на то, существует ли файл с данными пользователя
         if not path.exists(f"D:/PyProjects/GitHub/MyWallet/Users/{self.__name}.json"):
             # Если файл не существует, создаем новый файл с данными пользователя
             data = self.create_user_json()
@@ -56,6 +62,7 @@ class Wallet:
     
     @property
     def name_of_user(self):
+        # Свойство-геттер для взаимодействия с атрибутом вне класса
         return self.__name
     
     def balance(self):
@@ -127,8 +134,9 @@ class Wallet:
         data = self.read_json(self.__name)
         print("\nОперации за последний месяц:")
         
+        # Поднимаем исключение, если список операций пуст
         if not data["deposits"]:
-            raise JsonException  # Поднимаем исключение, если список операций пуст
+            raise JsonException
         
         for i in filter(lambda x: datetime.strptime(x["date"], "%d-%m-%Y") >= datetime.now() - timedelta(days=31),
                         data["deposits"]):
@@ -171,7 +179,7 @@ if __name__ == "__main__":
             
             case 2:
                 User.deposits_upd(User.create_data("Доход"))
-                
+            
             case 3:
                 User.deposits_upd(User.create_data("Расход"))
             
