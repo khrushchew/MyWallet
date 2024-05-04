@@ -21,13 +21,13 @@ class Wallet:
         return data
     
     @staticmethod
-    def read_json(name):
+    def read_json(name: str):
         # Статический метод для чтения данных из файла JSON
         with open(f"D:/PyProjects/GitHub/MyWallet/Users/{name}.json", "r", encoding="utf-8") as file:
             return json.load(file)
     
     @staticmethod
-    def create_data(string):
+    def create_data(string: str):
         # Статический метод для создания разметки расхода\дохода под JSON
         data = {"ID": len(User.read_json(User.name_of_user)["deposits"]) + 1,
                 "category": string,
@@ -36,7 +36,7 @@ class Wallet:
                 "date": input("Введите дату в формате '04-05-2024'\n")}
         return data
     
-    def __init__(self, name):
+    def __init__(self, name: str):
         # Магический метод для инициализации всех экземпляров
         
         # Проверка, что имя пользователя состоит только из латинских букв
@@ -69,7 +69,7 @@ class Wallet:
         # Метод для получения баланса пользователя
         return self.read_json(self.__name)["total"]
     
-    def deposits_upd(self, dict_value):
+    def deposits_upd(self, dict_value: dict):
         # Метод для обновления данных о доходах/расходах и обновления баланса пользователя
         data = self.read_json(self.__name)
         if dict_value["category"] == "Доход":
@@ -80,7 +80,7 @@ class Wallet:
         with open(f"D:/PyProjects/GitHub/MyWallet/Users/{self.__name}.json", "w", encoding="utf-8") as file:
             json.dump(data, file, ensure_ascii=False, indent=4)
     
-    def deposits_edit(self, date_for_editing, string):
+    def deposits_edit(self, date_for_editing: datetime, string: str):
         # Метод для редактирования данных о доходах/расходах
         data = self.read_json(self.__name)
         print(f"\nОперации за {date_for_editing.strftime("%d-%m-%Y")}:")
@@ -101,9 +101,13 @@ class Wallet:
         with open(f"D:/PyProjects/GitHub/MyWallet/Users/{self.__name}.json", "w", encoding="utf-8") as file:
             json.dump(data, file, ensure_ascii=False, indent=4)
     
-    def detail_info(self, flag):
+    def detail_info(self, flag: str):
         # Метод для получения детальной информации о доходах/расходах
         data = self.read_json(self.__name)
+        
+        # Поднимаем исключение, если список операций пуст
+        if not data["deposits"]:
+            raise JsonException
         
         param = int(input("\nВыберите какие операции вы хотите увидеть:\n"
                           "1 - Все операции за всё время\n"
